@@ -10,7 +10,7 @@ from pyzbar.pyzbar import decode
 
 EES_DOWNLOAD_LOCATION = 'https://repository.eset.com/v1/com/eset/apps/business/ees/android/v5/5.1.2.0/ees.apk'
 
-EQR_PROGRAM_VERSION = '1.2.1' #x.x.x version
+EQR_PROGRAM_VERSION = '1.3.1' #x.x.x version
 
 EQR_LAST_FOLDER_REG_BASE = r'SOFTWARE\EQR\QrESETChangerz' #raw string
 
@@ -55,7 +55,8 @@ from System.Windows.Forms import (
     SaveFileDialog,
     DialogResult,
     MessageBox,
-    MessageBoxButtons # Added this import
+    MessageBoxButtons,
+    MessageBoxIcon # type: ignore
 )
 from System.Drawing import Size, Point, Font
 
@@ -178,21 +179,21 @@ class FilePickerApp(Form):
                     img.save(save_file_path)
                 except Exception as e:
                     MessageBox.Show(self, f"An error occurred while saving the file: {e}",
-                                "Error", MessageBoxButtons.OK)
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     
                 
                 if os.path.isfile(save_file_path):
                     MessageBox.Show(self, f"The file {save_file_path} was successfully written",
-                                "Info", MessageBoxButtons.OK)
+                                "Info", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 else:
                     MessageBox.Show(self, f"The file {save_file_path} was not written, some error occured",
-                                "Error", MessageBoxButtons.OK)
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             #/mythngs
 
         elif dialog_result == DialogResult.Cancel:
             # The user cancelled the dialog
             # Corrected: We now use MessageBoxButtons.OK
-            MessageBox.Show(self, "File selection was cancelled.", "Cancelled", MessageBoxButtons.OK)
+            MessageBox.Show(self, "File selection was cancelled.", "Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information)
             self.file_content = None
 
     #my qr thngs
@@ -216,8 +217,8 @@ class FilePickerApp(Form):
       
         if not qr_result: 
             print(f" the decode() returned no results for the image at path: {self.file_path}")
-            MessageBox.Show(self, f"the QR image cannot be decoded, please select an appropriate image",
-            "Error", MessageBoxButtons.OK)
+            MessageBox.Show(self, f"The QR image cannot be decoded, please select an appropriate image",
+            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             return None
 
         qr_text = qr_result[0].data.decode('utf-8')  
