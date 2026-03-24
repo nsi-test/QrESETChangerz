@@ -10,7 +10,7 @@ from pyzbar.pyzbar import decode
 
 EES_DOWNLOAD_LOCATION = 'https://repository.eset.com/v1/com/eset/apps/business/ees/android/v5/5.1.2.0/ees.apk'
 
-EQR_PROGRAM_VERSION = '1.1.1' #x.x.x version
+EQR_PROGRAM_VERSION = '1.2.1' #x.x.x version
 
 EQR_LAST_FOLDER_REG_BASE = r'SOFTWARE\EQR\QrESETChangerz' #raw string
 
@@ -153,6 +153,10 @@ class FilePickerApp(Form):
             #mythngs
             img = self._replace_path_in_png()
 
+            if not img:
+                #something went wrong in the QR processing, we already showed a message box
+                return
+
             save_dialog = SaveFileDialog()
 
             save_dialog.Title = "Please choose a file name for the new QR image to save"
@@ -210,14 +214,15 @@ class FilePickerApp(Form):
             print("\nAn error occurred getting the image:")
             print(ex)
       
+        if not qr_result: 
+            print(f" the decode() returned no results for the image at path: {self.file_path}")
+            MessageBox.Show(self, f"the QR image cannot be decoded, please select an appropriate image",
+            "Error", MessageBoxButtons.OK)
+            return None
+
         qr_text = qr_result[0].data.decode('utf-8')  
 
         print(f"qr_text should be: {qr_text}")
-
-        if not qr_text:
-            MessageBox.Show(self, f"the QR image is not appropriate",
-            "Error", MessageBoxButtons.OK)
-            self.file_path = None # clear the bad path
 
         #json part
         jqr = json.loads(qr_text)
